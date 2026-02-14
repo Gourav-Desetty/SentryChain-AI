@@ -17,3 +17,6 @@ pypdf
 pymupdf
 
 sentence-transformers
+
+llama-cloud
+httpx
