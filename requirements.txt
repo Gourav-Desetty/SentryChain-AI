@@ -20,3 +20,7 @@ sentence-transformers
 
 llama-cloud
 httpx
+langchain-experimental
+neo4j
+
+pinecone
