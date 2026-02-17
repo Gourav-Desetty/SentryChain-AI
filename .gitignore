@@ -1,2 +1,3 @@
 .env
-data/
+data/contracts/
+data/processed_contracts/
