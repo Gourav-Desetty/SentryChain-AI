@@ -16,3 +16,17 @@
 * Search for the query (*user_input*) and the supplier_name (*user_input*) from the pinecone and graph db 
 * Combine both contexts from graphdb and pinecone 
 * Push the combined contexts to the llm 
+
+# Phase 2
+
+Tavily Search (per supplier)
+        ↓
+News Snippets
+        ↓
+Embed snippet → Pinecone Query → Matching SLA Chunks
+        ↓
+Graph Query (Neo4j) → Confirm supplier ownership
+        ↓
+LLM Prompt (news + clauses) → Violation verdict
+        ↓
+Risk Report / Neo4j NewsEvent node
