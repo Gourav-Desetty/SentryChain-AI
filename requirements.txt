@@ -1,3 +1,5 @@
+torch
+torchvision
 fastapi
 uvicorn
 mlflow
@@ -11,17 +13,14 @@ python-dotenv
 langchain-groq
 langchain-openai
 langchain-community
-streamlit
 wikipedia
 pypdf
 pymupdf
-
 sentence-transformers
-
+llama-cloud-services
 llama-cloud
 httpx
 langchain-experimental
 neo4j
-
 pinecone
 langchain-tavily
