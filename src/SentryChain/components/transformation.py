@@ -3,13 +3,13 @@ from typing import List
 from pathlib import Path
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
-from src.SentryChain.constants import ingestion_pipeline
+from src.SentryChain.constants.project_constants import CHUNK_SIZE, CHUNK_OVERLAP
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
 class DataTransformation:
-    def __init__(self, chunk_size:int = ingestion_pipeline.CHUNK_SIZE,
-                chunk_overlap:int = ingestion_pipeline.CHUNK_OVERLAP) -> None:
+    def __init__(self, chunk_size:int = CHUNK_SIZE,
+                chunk_overlap:int = CHUNK_OVERLAP) -> None:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.text_splitter = RecursiveCharacterTextSplitter(

@@ -4,11 +4,11 @@ from llama_cloud import LlamaCloud
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.entity.schema import SLADocument
-from src.SentryChain.constants import ingestion_pipeline
+from src.SentryChain.constants.project_constants import PDF_PATHS, PROCESSED_PDF
 
 class SlaMetadataExtraction:
-    def __init__(self, pdf_paths: list = ingestion_pipeline.PDF_PATHS, 
-                processed_pdf_path: Path = ingestion_pipeline.PROCESSED_PDF) -> None:
+    def __init__(self, pdf_paths: list = PDF_PATHS, 
+                processed_pdf_path: Path = PROCESSED_PDF) -> None:
 
         self.pdf_paths = pdf_paths
         self.processed_pdf_path = processed_pdf_path    
