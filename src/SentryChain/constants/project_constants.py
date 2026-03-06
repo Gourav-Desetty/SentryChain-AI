@@ -10,3 +10,7 @@ CHUNK_OVERLAP = 200
 
 PROCESSED_JSON_CONTRACT = Path("../data/processed_contracts")
 PROCESSED_JSON_CONTRACT_PATHS = list(PROCESSED_JSON_CONTRACT.glob("*.json"))
+
+EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
+
+PINECONE_INDEX_NAME = "sentry-chain-ai"
