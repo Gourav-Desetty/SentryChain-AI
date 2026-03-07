@@ -6,7 +6,14 @@ from src.SentryChain.constants.graph_queries import SUPPLIER_CONTRACT, PENALTY_N
 from src.SentryChain.components.transformation import DataTransformation
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.exception.exception import CustomException
-
+import os, sys
+from pathlib import Path
+from src.SentryChain.constants.project_constants import PDF_PATHS, PROCESSED_PDF
+from langchain_community.document_loaders import TextLoader
+from src.SentryChain.constants.graph_queries import SUPPLIER_CONTRACT, PENALTY_NODES, CONTRACT_CHUNK_LINK
+from src.SentryChain.components.transformation import DataTransformation
+from src.SentryChain.logging.logger import logging
+from src.SentryChain.exception.exception import CustomException
 
 class DataIngestion:
     def __init__(self):
