@@ -21,3 +21,9 @@ CONTRACT_CHUNK_LINK = """
         SET ch.text_preview = $text
         MERGE (c)-[:HAS_CONTENT_CHUNK]->(ch)
         """
+
+GRAPH_SEARCH = """
+        MATCH(s:Supplier{name:$supplier_name})-[:HAS_CONTRACT]->(c)-[:HAS_CONTENT_CHUNK]->(ch)
+        WHERE ch.vector_id IN $vector_ids  
+        RETURN ch.vector_id as id, ch.text_preview as preview
+        """
