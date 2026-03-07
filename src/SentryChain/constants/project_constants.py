@@ -14,3 +14,8 @@ PROCESSED_JSON_CONTRACT_PATHS = list(PROCESSED_JSON_CONTRACT.glob("*.json"))
 EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
 
 PINECONE_INDEX_NAME = "sentry-chain-ai"
+
+TARGET_CONTRACT_ID = "OnlineSvcsConsolidatedSLA(WW)(English)(January2026)CR (1)_parsed"
+
+MODEL_NAME = "llama-3.3-70b-versatile"
+CURRENT_YEAR = "2026"
