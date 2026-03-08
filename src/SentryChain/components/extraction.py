@@ -4,14 +4,11 @@ from llama_cloud import LlamaCloud
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.entity.schema import SLADocument
-from src.SentryChain.constants.project_constants import PDF_PATHS, PROCESSED_PDF
+from src.SentryChain.entity.config_entity import IngestionConfig
 
 class SlaMetadataExtraction:
-    def __init__(self, pdf_paths: list = PDF_PATHS, 
-                processed_pdf_path: Path = PROCESSED_PDF) -> None:
-
-        self.pdf_paths = pdf_paths
-        self.processed_pdf_path = processed_pdf_path    
+    def __init__(self, ingestion_config : IngestionConfig) -> None:
+        self.ingestion_config = ingestion_config
         self.schema = SLADocument.model_json_schema()
         logging.info("SlaMetadataExtraction initialized with schema and paths.")
 
@@ -24,7 +21,7 @@ class SlaMetadataExtraction:
             raise CustomException(e, sys)
 
 
-        for pdf in self.pdf_paths:
+        for pdf in self.ingestion_config.pdf_paths:
             try:
                 logging.info(f"Starting metadata extraction for: {pdf.name}")
                 with open(pdf, "rb") as f:
@@ -41,7 +38,7 @@ class SlaMetadataExtraction:
 
                 sla = SLADocument(**result.data)
 
-                output_path = self.processed_pdf_path / f"{pdf.stem}.json"
+                output_path = self.ingestion_config.processed_pdf / f"{pdf.stem}.json"
                 output_path.write_text(sla.model_dump_json(indent=2, exclude_none=True), encoding="utf-8")
                 logging.info(f"Successfully saved extracted metadata to {output_path}")
 

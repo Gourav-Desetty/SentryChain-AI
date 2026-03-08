@@ -3,18 +3,19 @@ from pathlib import Path
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from pinecone import Pinecone, ServerlessSpec
-from src.SentryChain.constants.project_constants import PINECONE_INDEX_NAME
+from src.SentryChain.entity.config_entity import Neo4jConfig
 from langchain_community.graphs import Neo4jGraph
 
 class GraphStoreManager:
-    def __init__(self) -> None:
+    def __init__(self, neo4j_config: Neo4jConfig) -> None:
         try:
+            self.neo4j_config = neo4j_config
             logging.info("Initializing Neo4j graph connection")
             self.graph = Neo4jGraph(
-                url=os.getenv("NEO4J_URI"), 
-                username=os.getenv("NEO4J_USERNAME"), 
-                password=os.getenv("NEO4J_PASSWORD"),
-                database='neo4j'
+                url=neo4j_config.url, 
+                username=neo4j_config.username, 
+                password=neo4j_config.password,
+                database=neo4j_config.database
             )
             logging.info("Neo4j connection established")
         except Exception as e:

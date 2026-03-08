@@ -4,18 +4,17 @@ from llama_cloud import AsyncLlamaCloud
 from src.SentryChain.constants.project_constants import PDF_PATHS, PROCESSED_PDF
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
+from src.SentryChain.entity.config_entity import IngestionConfig
 
 # Extract text from pdf
 class TextExtraction:
-    def __init__(self, pdf_paths: list = PDF_PATHS, 
-                processed_pdf_path: Path = PROCESSED_PDF) -> None:
-        self.pdf_paths = pdf_paths
-        self.processed_pdf_path = processed_pdf_path
+    def __init__(self, ingestion_config : IngestionConfig) -> None:
+        self.ingestion_config = ingestion_config
         logging.info("TextExtraction initialsed with paths.")
 
     async def llama_parse(self):
         try:
-            if not self.pdf_paths:
+            if not self.ingestion_config.pdf_paths:
                 logging.error("No PDF files found.")
                 raise ValueError("No PDF files found.")
             
@@ -24,7 +23,7 @@ class TextExtraction:
             logging.error("Failed to initialize llama cloud client")
             raise CustomException(e, sys)
 
-        for pdf_path in self.pdf_paths:
+        for pdf_path in self.ingestion_config.pdf_paths:
             try:
                 logging.info(f"Starting text extraction for: {pdf_path.name}")
 
@@ -57,7 +56,7 @@ class TextExtraction:
                 else:
                     full_text = "\n\n".join(page.markdown for page in result.markdown.pages)
 
-                output_file = self.processed_pdf_path / f"{pdf_path.stem}_parsed.txt"
+                output_file = self.ingestion_config.processed_pdf_dir / f"{pdf_path.stem}_parsed.txt"
                 with open(output_file, "w", encoding="utf-8") as f:
                     f.write(full_text)
 

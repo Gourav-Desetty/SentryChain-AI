@@ -3,19 +3,17 @@ from typing import List
 from pathlib import Path
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
-from src.SentryChain.constants.project_constants import CHUNK_SIZE, CHUNK_OVERLAP
+from src.SentryChain.entity.config_entity import DataTransformationConfig
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
 class DataTransformation:
-    def __init__(self, chunk_size:int = CHUNK_SIZE,
-                chunk_overlap:int = CHUNK_OVERLAP) -> None:
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
+    def __init__(self, data_transformation_config: DataTransformationConfig) -> None:
+        self.data_transformation_config = data_transformation_config
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n", "\n", "\nClause", "\nSection", " ", ""],
-            chunk_overlap=chunk_overlap,
-            chunk_size=chunk_size
+            chunk_overlap=data_transformation_config.chunk_overlap,
+            chunk_size=data_transformation_config.chunks_size
         )
 
     def split_docs(self, documents: List[Document]):
