@@ -2,12 +2,13 @@ import os, sys
 from typing import List
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
-from src.SentryChain.constants.project_constants import EMBEDDING_MODEL_NAME
+from src.SentryChain.entity.config_entity import EmbeddingConfig
 from sentence_transformers import SentenceTransformer
 
 class EmbeddingManager:
-    def __init__(self, model_name: str = EMBEDDING_MODEL_NAME ):
-        self.model_name = model_name
+    def __init__(self, embedding_config: EmbeddingConfig):
+        self.embedding_config = embedding_config
+        self.model_name = embedding_config.model_name
         self.model = None
         self.load_model()
 
