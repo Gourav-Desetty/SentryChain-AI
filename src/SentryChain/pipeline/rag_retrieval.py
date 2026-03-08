@@ -7,8 +7,8 @@ from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.entity.artifact_entity import RagRetrievalArtifact
 
 class RagRetrieval:
-    def __init__(self) -> None:
-        self.embeddings = EmbeddingManager()
+    def __init__(self, embeddings: EmbeddingManager) -> None:
+        self.embeddings = embeddings
 
     def rag_retrieval(self, query:str, supplier_name: str, index, graph) -> RagRetrievalArtifact:
         try:

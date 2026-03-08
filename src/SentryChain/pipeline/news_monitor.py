@@ -4,22 +4,21 @@ from src.SentryChain.constants.prompts import RISK_ANALYSIS_PROMPT, SUPPLIER_RIS
 from src.SentryChain.entity.artifact_entity import NewsFetchArtifact, CompareSLAArtifact, NewsArticle
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.exception.exception import CustomException
+from src.SentryChain.components.embedding import EmbeddingManager
 from src.SentryChain.pipeline.rag_retrieval import RagRetrieval
 from langchain_groq import ChatGroq
 from langchain_tavily import TavilySearch
 
 class NewsMonitor:
-    def __init__(self) -> None:
+    def __init__(self, retriever: RagRetrieval) -> None:
         try:
             self.groq_llm = ChatGroq(api_key=os.environ["GROQ_API_KEY"],
                                     model=MODEL_NAME,
                                     temperature=0.1)
-            self.retriever = RagRetrieval()
+            self.retriever = retriever
             logging.info("NewsMonitor initialized successfully.")
         except Exception as e:
             raise CustomException(e, sys)
-        
-
 
     def fetch_news(self, supplier_name, score_threshold:float = 0.5, current_year = CURRENT_YEAR) -> NewsFetchArtifact:
         try:
