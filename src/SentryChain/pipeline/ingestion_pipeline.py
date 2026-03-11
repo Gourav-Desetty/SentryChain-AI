@@ -17,22 +17,13 @@ class DataIngestion:
     def data_ingestion(self, 
                             sla_data, 
                             contract_id, 
-                            embedding_manager, 
+                            contract_chunks,
+                            embeddings, 
                             dense_index, 
                             graph): 
         
         try:
             supplier_name = sla_data.supplier_info.service_provider_name if sla_data.supplier_info else "Unknown"
-
-            text_file = self.ingestion_config.processed_pdf_dir / f"{contract_id}_parsed.txt"
-            loader = TextLoader(file_path=str(text_file), encoding="utf-8")
-            docs = loader.load()
-
-            contract_chunks = self.transformer.split_docs(documents=docs)
-
-            logging.info("Generating batch embeddings...")
-            texts = [chunk.page_content for chunk in contract_chunks]
-            batch_embeddings = embedding_manager.generate_embeddings(texts)
 
             graph.query(SUPPLIER_CONTRACT, params={
                 "s_name": supplier_name,
@@ -50,7 +41,7 @@ class DataIngestion:
                         "ref": p.clause_id
                     })
 
-            for i, (chunk, emb) in enumerate(zip(contract_chunks, batch_embeddings)):
+            for i, (chunk, emb) in enumerate(zip(contract_chunks, embeddings)):
                 chunk_id = f"{contract_id}#chunk{i}"
 
                 graph.query(CONTRACT_CHUNK_LINK, params={
