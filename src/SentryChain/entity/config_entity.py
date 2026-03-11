@@ -4,13 +4,17 @@ from typing import Optional
 from dataclasses import dataclass, field
 from src.SentryChain.constants.project_constants import(
     PDF_PATHS, PROCESSED_PDF, CHUNK_SIZE, CHUNK_OVERLAP, 
-    EMBEDDING_MODEL_NAME, PINECONE_INDEX_NAME
+    EMBEDDING_MODEL_NAME, PINECONE_INDEX_NAME, PROCESSED_JSON_CONTRACT,
+    PROCESSED_JSON_CONTRACT_PATHS
 )
 
 @dataclass
 class IngestionConfig:
     pdf_paths: list = field(default_factory=lambda: PDF_PATHS)
     processed_pdf_dir: Path = PROCESSED_PDF
+    processed_json_contract: Path = PROCESSED_JSON_CONTRACT
+    processed_json_contract_paths: list = field(default_factory=lambda: PROCESSED_JSON_CONTRACT_PATHS)
+
 
 @dataclass
 class DataTransformationConfig:
