@@ -24,3 +24,4 @@ langchain-experimental
 neo4j
 pinecone
 langchain-tavily
+langchain-neo4j
