@@ -53,7 +53,7 @@ class NewsMonitor:
     def compare_sla(self, supplier_name : str, news_results : list, index, graph) -> CompareSLAArtifact:
         try:
             logging.info(f"Starting SLA risk analysis for {supplier_name}")
-            news_content = "".join([f"Source:{article['title']}\n{article['content']}" for article in news_results])
+            news_content = "".join([f"Source:{article.title}\n{article.content}" for article in news_results])
 
             query = "service outage uptime penalty SLA breach downtime"
             artifact = self.retriever.rag_retrieval(
@@ -76,7 +76,7 @@ class NewsMonitor:
             compare_sla_artifact = CompareSLAArtifact(
                 supplier_id=supplier_name,
                 verdict=str(response.content),
-                news_used = [a['title'] for a in news_results],
+                news_used = [a.title for a in news_results],
                 sla_clauses_matched = combined_contexts
             )
             return compare_sla_artifact
