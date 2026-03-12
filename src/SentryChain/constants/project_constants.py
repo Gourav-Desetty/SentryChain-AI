@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
-PATH = Path("../data/contracts")
+PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
+
+PATH = PROJECT_ROOT / "data" / "contracts"
 PDF_PATHS = list(PATH.glob("*.pdf"))
-PROCESSED_PDF = Path("../data/processed_contracts")
+PROCESSED_PDF = PROJECT_ROOT / "data" / "processed_contracts"
 
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
