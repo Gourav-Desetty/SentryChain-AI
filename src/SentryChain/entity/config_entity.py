@@ -8,12 +8,14 @@ from src.SentryChain.constants.project_constants import(
     PROCESSED_JSON_CONTRACT_PATHS
 )
 
-@dataclass
+BASE_DIR = Path(__file__).resolve().parents[3]  
+
 class IngestionConfig:
-    pdf_paths: list = field(default_factory=lambda: PDF_PATHS)
-    processed_pdf_dir: Path = PROCESSED_PDF
-    processed_json_contract: Path = PROCESSED_JSON_CONTRACT
-    processed_json_contract_paths: list = field(default_factory=lambda: PROCESSED_JSON_CONTRACT_PATHS)
+    def __init__(self):
+        self.contracts_dir = BASE_DIR / "data" / "contracts"
+        self.processed_pdf_dir = BASE_DIR / "data" / "processed_contracts"
+        self.processed_json_contract = BASE_DIR / "data" / "processed_contracts"
+        self.pdf_paths = list(self.contracts_dir.glob("*.pdf"))
 
 
 @dataclass
