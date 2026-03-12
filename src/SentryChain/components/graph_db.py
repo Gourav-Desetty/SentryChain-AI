@@ -4,7 +4,7 @@ from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from pinecone import Pinecone, ServerlessSpec
 from src.SentryChain.entity.config_entity import Neo4jConfig
-from langchain_community.graphs import Neo4jGraph
+from langchain_neo4j import Neo4jGraph
 
 class GraphStoreManager:
     def __init__(self, neo4j_config: Neo4jConfig) -> None:
