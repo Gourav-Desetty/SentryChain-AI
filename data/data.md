@@ -1,32 +1,62 @@
-# SLA Dataset
-
-## 1. Raw Data Sources
-* **Microsoft Online Services SLA:** (Jan 2026) Official commitments for uptime. [https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services?lang=1]
-* **NABARD BIRD SLA:** (2024) Institutional agreement for digital solutions.
-
-# Phase 1
-
-## 2. SLA dataset goals
-* Retrieve all the text and the tables from the SLA's
-* Store all the retrieved text and tables in a separate txt files
-* Retrieve the .txt files perform chunking (*RecursiveCharacterTextSplitter*)
-* Make a metadata for each chunks and store in the respective document 
-* Use *BAAI/bge-m3* as embedding manager
-* Push the chunks with unique id to the graph database (*Neo4j*) and perform embedding on the chunks and push the embeddings + metadata + text to the *pinecone* database
-* Search for the query (*user_input*) and the supplier_name (*user_input*) from the pinecone and graph db 
-* Combine both contexts from graphdb and pinecone 
-* Push the combined contexts to the llm 
-
-# Phase 2
-
+# 📄 SLA Dataset & Pipeline
+ 
+## 📦 1. Raw Data Sources
+ 
+| Contract | Version | Description |
+|----------|---------|-------------|
+| [Microsoft Online Services SLA](https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services?lang=1) | Jan 2026 | Official uptime commitments for Microsoft Online Services |
+| **Mazagon Dock Shipbuilders (MDL) SLA** | 2023–2025 | Rate contract for industrial subcontracting services |
+ 
+---
+ 
+## 🔵 Phase 1 — Building the Digital Brain
+ 
+### 2. SLA Dataset Goals
+ 
+#### 📥 Ingestion
+- Extract all **text and tables** from SLA PDFs using `LlamaParse`
+- Store retrieved content in separate `.txt` files per contract
+ 
+#### ✂️ Chunking & Embedding
+- Load `.txt` files and perform chunking using `RecursiveCharacterTextSplitter`
+  - Chunk size: `1200` | Overlap: `200`
+  - Separators: `["\nClause", "\nSection", " ", ""]`
+- Generate dense embeddings using **`BAAI/bge-m3`** (1024 dimensions)
+ 
+#### 🗄️ Storage
+- Push chunks with unique IDs to:
+  - **Neo4j** — graph database storing supplier → contract → chunk relationships
+  - **Pinecone** — vector database storing embeddings + metadata + raw text
+ 
+#### 🔍 Retrieval
+```
+User Query + Supplier Name
+        ↓
+Pinecone Vector Search (top-k chunks)
+        ↓
+Neo4j Cross-Reference (confirm supplier ownership)
+        ↓
+Combined Context (vector + graph)
+        ↓
+LLM Response
+```
+ 
+---
+ 
+## 🔴 Phase 2 — The News Monitor
+ 
+### 3. SLA Violation Detection Pipeline
+ 
+```
 Tavily Search (per supplier)
         ↓
 News Snippets
         ↓
-Embed snippet → Pinecone Query → Matching SLA Chunks
+Embed Snippet → Pinecone Query → Matching SLA Chunks
         ↓
-Graph Query (Neo4j) → Confirm supplier ownership
+Graph Query (Neo4j) → Confirm Supplier Ownership
         ↓
-LLM Prompt (news + clauses) → Violation verdict
+LLM Prompt (news + clauses) → Violation Verdict
         ↓
-Risk Report / Neo4j NewsEvent node
+Risk Report
+```
