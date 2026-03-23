@@ -27,3 +27,4 @@ langchain-tavily
 langchain-neo4j
 
 ragas
+langchain-google-genai
