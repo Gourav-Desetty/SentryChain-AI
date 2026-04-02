@@ -22,6 +22,17 @@ class NewsFetchArtifact:
 @dataclass
 class CompareSLAArtifact:
     supplier_id: str
-    verdict: str
+    verdict: str 
     news_used: List[str]
     sla_clauses_matched: List[str]
+    is_verified: bool | None
+    hallucinations: list
+
+@dataclass
+class InputGuardrailArtifact:
+        filtered_articles: list[NewsArticle]
+
+@dataclass
+class OutputGuardrailArtifact:
+    is_verified: bool | None
+    hallucinations: list
