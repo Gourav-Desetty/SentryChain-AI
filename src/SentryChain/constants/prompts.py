@@ -13,3 +13,19 @@ RISK_ANALYSIS_PROMPT = """You are a contract risk analyst.
             4. Overall risk severity? (Low/Medium/High/Critical)
 
             Be specific and cite clause numbers where possible."""
+
+VALIDATION_PROMPT = """
+    You are a fact checker for legal verdicts.
+    
+    VERDICT:
+    {verdict}
+    
+    SLA CLAUSES (source of truth):
+    {clauses}
+    
+    Check every specific number, clauses, percentage, amount, or timeframe mentioned in the verdict.
+    Does each one actually appear in the SLA clauses above?
+
+    Reply ONLY in this JSON format with no extra text:
+    {{"is_grounded": true, "hallucinated_claims": []}}
+    """
