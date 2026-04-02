@@ -3,3 +3,4 @@ data/contracts/
 data/processed_contracts/
 __pycache__
 logs/
+*.html
