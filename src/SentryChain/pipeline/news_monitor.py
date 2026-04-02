@@ -4,7 +4,7 @@ from src.SentryChain.constants.prompts import RISK_ANALYSIS_PROMPT, SUPPLIER_RIS
 from src.SentryChain.entity.artifact_entity import NewsFetchArtifact, CompareSLAArtifact, NewsArticle
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.exception.exception import CustomException
-from src.SentryChain.components.embedding import EmbeddingManager
+from src.SentryChain.components.guardrails import Guardrails
 from src.SentryChain.pipeline.rag_retrieval import RagRetrieval
 from langchain_groq import ChatGroq
 from langchain_tavily import TavilySearch
@@ -16,6 +16,7 @@ class NewsMonitor:
                                     model=MODEL_NAME,
                                     temperature=0.1)
             self.retriever = retriever
+            self.guardrail = Guardrails(llm=self.groq_llm)           
             logging.info("NewsMonitor initialized successfully.")
         except Exception as e:
             raise CustomException(e, sys)
@@ -42,9 +43,12 @@ class NewsMonitor:
                 for r in results.get('results', []) if r.get('score', 0) >= score_threshold
             ]
             logging.info(f"Retrieved {len(articles)} high-confidence news articles.")
+
+            input_guardrail_results = self.guardrail.input_guardrail(articles=articles)
+
             news_fetch_artifact = NewsFetchArtifact(
                 supplier_name=supplier_name,
-                articles=articles
+                articles=input_guardrail_results.filtered_articles
             )
             return news_fetch_artifact
         except Exception as e:
@@ -73,11 +77,18 @@ class NewsMonitor:
 
             response = self.groq_llm.invoke(final_prompt)
             logging.info(f"Risk analysis complete for {supplier_name}.")
+            
+            output_guardrail_results = self.guardrail.output_guardrail (
+                verdict=str(response.content),
+                combined_contexts=combined_contexts
+            )
             compare_sla_artifact = CompareSLAArtifact(
                 supplier_id=supplier_name,
                 verdict=str(response.content),
                 news_used = [a.title for a in news_results],
-                sla_clauses_matched = combined_contexts
+                sla_clauses_matched = combined_contexts,
+                is_verified = output_guardrail_results.is_verified,
+                hallucinations = output_guardrail_results.hallucinations
             )
             return compare_sla_artifact
         except Exception as e:
