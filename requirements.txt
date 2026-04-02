@@ -31,3 +31,4 @@ ragas
 datasets
 ipykernel
 httpx
+evidently>=0.4.0
