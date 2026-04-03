@@ -6,13 +6,14 @@ from src.SentryChain.logging.logger import logging
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.components.guardrails import Guardrails
 from src.SentryChain.pipeline.rag_retrieval import RagRetrieval
+from pydantic import SecretStr
 from langchain_groq import ChatGroq
 from langchain_tavily import TavilySearch
 
 class NewsMonitor:
     def __init__(self, retriever: RagRetrieval) -> None:
         try:
-            self.groq_llm = ChatGroq(api_key=os.environ["GROQ_API_KEY"],
+            self.groq_llm = ChatGroq(api_key=SecretStr(os.environ["GROQ_API_KEY"]),
                                     model=MODEL_NAME,
                                     temperature=0.1)
             self.retriever = retriever
