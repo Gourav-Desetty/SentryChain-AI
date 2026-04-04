@@ -2,6 +2,7 @@ torch
 torchvision
 sentence-transformers
 numpy
+python-multipart
 
 langchain
 langchain-community
@@ -13,7 +14,7 @@ langgraph
 google-genai
 
 pypdf
-llama-cloud
+llama_cloud>=2.1
 llama-cloud-services
 python-dotenv
 wikipedia
