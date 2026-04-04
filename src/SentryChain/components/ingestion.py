@@ -1,23 +1,21 @@
 import os, sys
 from pathlib import Path
-from llama_cloud import AsyncLlamaCloud
-from src.SentryChain.constants.project_constants import PDF_PATHS, PROCESSED_PDF
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.entity.config_entity import IngestionConfig
 
-# Extract text from pdf
 class TextExtraction:
-    def __init__(self, ingestion_config : IngestionConfig) -> None:
+    def __init__(self, ingestion_config: IngestionConfig) -> None:
         self.ingestion_config = ingestion_config
-        logging.info("TextExtraction initialsed with paths.")
+        logging.info("TextExtraction initialised with paths.")
 
     async def llama_parse(self):
         try:
             if not self.ingestion_config.pdf_paths:
                 logging.error("No PDF files found.")
                 raise ValueError("No PDF files found.")
-            
+
+            from llama_cloud import AsyncLlamaCloud
             client = AsyncLlamaCloud(api_key=os.getenv("LLAMA_CLOUD_API_KEY"))
         except Exception as e:
             logging.error("Failed to initialize llama cloud client")
@@ -32,7 +30,7 @@ class TextExtraction:
 
                 result = await client.parsing.parse(
                     file_id=file_obj.id,
-                    tier="agentic_plus",
+                    tier="agentic",
                     version="latest",
                     output_options={
                         "markdown": {
@@ -44,15 +42,9 @@ class TextExtraction:
                     expand=["markdown"],
                 )
 
-                logging.info(f"Result type: {type(result)}")
-                logging.info(f"Markdown: {result.markdown}")
-                logging.info(f"Result keys: {result.__dict__.keys()}")
-
                 if result.markdown is None or result.markdown.pages is None:
-                    logging.warning(f"Warning: No markdown returned for {pdf_path.name}, trying text fallback...")
-                    
-                    markdown_result = await client.parsing.get_job_markdown(job_id=result.id)
-                    full_text = markdown_result if isinstance(markdown_result, str) else str(markdown_result)
+                    logging.warning(f"No markdown returned for {pdf_path.name}, trying text fallback...")
+                    full_text = result.text if isinstance(result.text, str) else str(result)
                 else:
                     full_text = "\n\n".join(page.markdown for page in result.markdown.pages)
 
@@ -61,6 +53,7 @@ class TextExtraction:
                     f.write(full_text)
 
                 logging.info(f"Saved: {output_file}")
+
             except Exception as e:
-                logging.info(f"Error during text extraction of {pdf_path.name} : {str(e)}")
+                logging.error(f"Error during text extraction of {pdf_path.name}: {str(e)}")
                 raise CustomException(e, sys)
