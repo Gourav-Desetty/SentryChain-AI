@@ -1,4 +1,4 @@
-import os, sys, json
+import os, sys, json, re
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.constants.prompts import VALIDATION_PROMPT
@@ -13,7 +13,7 @@ class Guardrails:
             KEYWORDS = ["outage", "breach", "status", "downtime", "incident", "sla", "penalty", "unavailable", "offline", "war"]
 
             def is_relevant(article):
-                text = (article["title"] + article["content"]).lower()
+                text = (article.title + article.content).lower()
                 return any(kw in text for kw in KEYWORDS)
 
             filtered_articles = [a for a in articles if is_relevant(a)]
@@ -34,7 +34,10 @@ class Guardrails:
             ## pass the prompt to llm
             validation_response = self.llm.invoke(validation_input) 
 
-            validation_data = json.loads(validation_response.content)
+            raw = validation_response.content
+            raw = re.sub(r"```json|```", "", raw).strip()
+            raw = re.sub(r'\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})', r'\\\\', raw)
+            validation_data = json.loads(raw)
 
             is_grounded = validation_data.get("is_grounded", False)
             hallucinations = validation_data.get("hallucinated_claims", [])
