@@ -57,6 +57,7 @@ class DataIngestion:
                         **chunk.metadata,
                         "text": chunk.page_content,
                         "supplier_name": supplier_name,
+                        "contract_id": contract_id
                     }
                 }])
             

@@ -85,6 +85,7 @@ if __name__ == "__main__":
             compare_sla_artifact = news_monitor.compare_sla(
                 supplier_name=supplier_name,
                 news_results=news_artifact.articles,
+                contract_id=contract_id,
                 index = dense_index,
                 graph=graph
             )

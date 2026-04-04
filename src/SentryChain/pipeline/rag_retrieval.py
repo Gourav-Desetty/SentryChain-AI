@@ -10,7 +10,7 @@ class RagRetrieval:
     def __init__(self, embeddings: EmbeddingManager) -> None:
         self.embeddings = embeddings
 
-    def rag_retrieval(self, query:str, supplier_name: str, index, graph) -> RagRetrievalArtifact:
+    def rag_retrieval(self, query:str, supplier_name: str, contract_id: str, index, graph) -> RagRetrievalArtifact:
         try:
             logging.info(f"Generating embeddings for the query: {query}")
             query_embedding = self.embeddings.generate_embeddings([query])
@@ -22,7 +22,7 @@ class RagRetrieval:
                 top_k=5,
                 
                 include_metadata=True,
-                filter={"supplier_name": {"$eq": supplier_name}}
+                filter={"contract_id": {"$eq": contract_id}}
             )
 
             retrieved_vector_ids = [m['id'] for m in vector_db_result['matches']]

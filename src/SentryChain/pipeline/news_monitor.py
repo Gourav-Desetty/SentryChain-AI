@@ -55,7 +55,7 @@ class NewsMonitor:
         except Exception as e:
             raise CustomException(e, sys)
 
-    def compare_sla(self, supplier_name : str, news_results : list, index, graph) -> CompareSLAArtifact:
+    def compare_sla(self, supplier_name : str, news_results : list, contract_id: str, index, graph) -> CompareSLAArtifact:
         try:
             logging.info(f"Starting SLA risk analysis for {supplier_name}")
             news_content = "".join([f"Source:{article.title}\n{article.content}" for article in news_results])
@@ -64,6 +64,7 @@ class NewsMonitor:
             artifact = self.retriever.rag_retrieval(
                 query=query, 
                 supplier_name=supplier_name, 
+                contract_id=contract_id,
                 index=index, 
                 graph=graph)
             vector_texts = [match['metadata']['text'] for match in artifact.verified_results]
