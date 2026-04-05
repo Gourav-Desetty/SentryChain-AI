@@ -1,0 +1,7 @@
+streamlit
+ragas
+datasets
+ipykernel
+evidently>=0.4.0
+wikipedia
+mlflow
