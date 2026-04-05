@@ -15,7 +15,8 @@ class GraphStoreManager:
                 url=neo4j_config.url, 
                 username=neo4j_config.username, 
                 password=neo4j_config.password,
-                database=neo4j_config.database
+                database=neo4j_config.database,
+                refresh_schema=False
             )
             logging.info("Neo4j connection established")
         except Exception as e:
