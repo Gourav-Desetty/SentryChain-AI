@@ -23,7 +23,7 @@ class DataIngestion:
                             graph): 
         
         try:
-            supplier_name = sla_data.supplier_info.service_provider_name if sla_data.supplier_info else "Unknown"
+            supplier_name = sla_data.supplier_info.service_provider_name if sla_data.supplier_info else contract_id  
 
             graph.query(SUPPLIER_CONTRACT, params={
                 "s_name": supplier_name,
