@@ -270,4 +270,4 @@ curl -X POST http://localhost:8000/monitor \
 
 ## License
 
-This project is for portfolio and research purposes.
+Distributed under the **MIT License**. See `LICENSE` for more information.
