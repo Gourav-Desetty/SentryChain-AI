@@ -42,9 +42,9 @@ SentryChain AI is an end-to-end agentic pipeline that:
 ┌─────────────────────────────────────────────────────────────────┐
 │                        PHASE 1: INGESTION                       │
 │                                                                 │
-│  SLA PDFs ──► LlamaParse ──► Text + Metadata ──► Chunking      │
+│  SLA PDFs ──► LlamaParse ──► Text + Metadata ──► Chunking       │
 │                                    │                            │
-│                          ┌─────────┴──────────┐                │
+│                          ┌─────────┴──────────┐                 │
 │                          ▼                    ▼                 │
 │                    Pinecone (Vector DB)   Neo4j (Graph DB)      │
 │                    "The Library"          "The Map"             │
@@ -60,7 +60,7 @@ SentryChain AI is an end-to-end agentic pipeline that:
 │                                          │                      │
 │                                   Groq LLM Analysis             │
 │                                          │                      │
-│                              Output Guardrail (Hallucination     │
+│                              Output Guardrail (Hallucination    │
 │                              Check) ──► Final Verdict           │
 └─────────────────────────────────────────────────────────────────┘
 ```
