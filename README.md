@@ -38,32 +38,8 @@ SentryChain AI is an end-to-end agentic pipeline that:
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        PHASE 1: INGESTION                       │
-│                                                                 │
-│  SLA PDFs ──► LlamaParse ──► Text + Metadata ──► Chunking       │
-│                                    │                            │
-│                          ┌─────────┴──────────┐                 │
-│                          ▼                    ▼                 │
-│                    Pinecone (Vector DB)   Neo4j (Graph DB)      │
-│                    "The Library"          "The Map"             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────┐
-│                     PHASE 2: MONITORING                         │
-│                                                                 │
-│  Tavily News Search ──► Input Guardrail ──► Relevant Articles   │
-│                                                  │              │
-│                                    Hybrid RAG Retrieval         │
-│                               (Vector Search + Graph Lookup)    │
-│                                          │                      │
-│                                   Groq LLM Analysis             │
-│                                          │                      │
-│                              Output Guardrail (Hallucination    │
-│                              Check) ──► Final Verdict           │
-└─────────────────────────────────────────────────────────────────┘
-```
+![SentryChain AI Architecture](docs/architecture.svg)
+
 
 ---
 
