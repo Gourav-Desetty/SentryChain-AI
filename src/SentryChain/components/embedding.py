@@ -25,11 +25,12 @@ class EmbeddingManager:
         try:
             logging.info(f"Starting embedding model: {self.model_name}")
             embeddings = self.model.encode(texts, normalize_embeddings=True)
-            if len(texts) == 1:
-                logging.info(f"Embeddings completed")
-                return embeddings[0].astype(float).tolist()  
-            logging.info(f"Embeddings completed")
-            return embeddings.astype(float).tolist()    
+            # Ensure return is always List[List[float]]
+            result = embeddings.astype(float).tolist()
+            if result and isinstance(result[0], float):
+                result = [result]
+            logging.info(f"Embeddings completed for {len(texts)} texts")
+            return result
         except Exception as e:
             logging.error("Error generating embeddings")
             raise CustomException(e, sys)
