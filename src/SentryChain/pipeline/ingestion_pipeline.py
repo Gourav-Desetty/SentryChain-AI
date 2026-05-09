@@ -54,10 +54,10 @@ class DataIngestion:
                     "id": chunk_id,
                     "values": emb,
                     "metadata": {
-                        **chunk.metadata,
                         "text": chunk.page_content,
+                        "source": chunk.metadata.get("source", ""),
                         "supplier_name": supplier_name,
-                        "contract_id": contract_id
+                        "contract_id": contract_id 
                     }
                 }])
             
