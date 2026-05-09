@@ -262,7 +262,7 @@ curl -X POST http://localhost:8000/monitor \
 - [x] RAGAS evaluation (Faithfulness ~0.98, Relevancy ~0.97)
 - [x] FastAPI REST layer
 - [x] Docker + Docker Compose
-- [ ] Streamlit UI
+- [x] Streamlit UI
 - [ ] Evidently drift monitoring
 - [ ] MLflow experiment tracking
 
