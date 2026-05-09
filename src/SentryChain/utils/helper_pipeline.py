@@ -11,7 +11,7 @@ async def start_ingestion(ingestion_config: IngestionConfig):
     try:
         logging.info("Starting LlamaParse text extraction...")
         text_extraction = TextExtraction(ingestion_config=ingestion_config)
-        await text_extraction.llama_parse()
+        await text_extraction.llama_parse()  
         logging.info("Text Extraction phase complete.")
     except Exception as e:
         raise CustomException(e, sys)
