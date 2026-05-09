@@ -125,6 +125,8 @@ async def ingest_contract(file: UploadFile = File(...)):
     if not file_name or not file_name.lower().endswith('.pdf'):
         raise HTTPException(status_code=404, detail="Only PDF files are supported")
 
+    file_name = file_name.replace(" ", "_")
+
     save_path = ingestion_config.contracts_dir / file_name
     save_path.write_bytes(await file.read())
 
@@ -175,10 +177,12 @@ def rag_query(request: QueryRequest):
     """Ask question about contract"""
     supplier_name = get_supplier_name(request.contract_id)
 
+    clean_id = request.contract_id.replace("_parsed", "")
+
     artifact = rag_retrieval.rag_retrieval(
         query=request.question,
         supplier_name=supplier_name,
-        contract_id=request.contract_id,
+        contract_id=clean_id,
         index=services["dense_index"],
         graph=services["graph"]
     )
@@ -195,6 +199,11 @@ def rag_query(request: QueryRequest):
             Answer (cite clause numbers where possible):"""
 
     response = services["llm"].invoke(prompt)
+
+    # debugging
+    # print("verified_results:", artifact.verified_results)
+    # print("graph_context:", artifact.graph_context)
+    # print("vector_db_result matches:", len(artifact.vector_db_result.get('matches', [])))
 
     return {
         "contract_id": request.contract_id,
