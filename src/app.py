@@ -1,10 +1,10 @@
-from src.SentryChain.api import app
+from src.SentryChain.backend import app
 import uvicorn
 
 if __name__ == "__main__":
     uvicorn.run(
-        "src.SentryChain.api.app:app", 
-        host="127.0.0.1", 
+        "src.SentryChain.backend.app:app", 
+        host="0.0.0.0", 
         port=8000, 
         reload=True
     )
