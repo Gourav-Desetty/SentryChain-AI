@@ -33,6 +33,9 @@ class TextExtraction:
                 full_text = "\n\n".join([doc.text for doc in documents])
 
                 output_file = self.ingestion_config.processed_pdf_dir / f"{path.stem}_parsed.txt"
+                if output_file.exists():
+                    logging.info(f"Skipping {path.name} — already parsed.")
+                    continue
                 output_file.write_text(full_text, encoding="utf-8")
 
                 logging.info(f"Saved: {output_file}")
