@@ -1,5 +1,6 @@
 import os, sys
 from typing import List
+import torch
 from src.SentryChain.exception.exception import CustomException
 from src.SentryChain.logging.logger import logging
 from src.SentryChain.entity.config_entity import EmbeddingConfig
@@ -16,6 +17,10 @@ class EmbeddingManager:
         try:
             logging.info(f"Loading model: {self.model_name}")
             self.model = SentenceTransformer(self.model_name)
+
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            self.model = self.model.to(device)
+
             logging.info(f"Model loaded successfully. Embedding dimension: {self.model.get_sentence_embedding_dimension()}")
         except Exception as e:
             logging.error("Error loading embedding model")
