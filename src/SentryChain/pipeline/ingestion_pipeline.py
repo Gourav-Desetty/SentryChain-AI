@@ -41,6 +41,7 @@ class DataIngestion:
                         "ref": p.clause_id
                     })
 
+            vectors_to_upsert = []
             for i, (chunk, emb) in enumerate(zip(contract_chunks, embeddings)):
                 chunk_id = f"{contract_id}#chunk{i}"
 
@@ -50,7 +51,7 @@ class DataIngestion:
                     "text": chunk.page_content[:200]
                 })
 
-                dense_index.upsert(vectors=[{
+                vectors_to_upsert.append({
                     "id": chunk_id,
                     "values": emb,
                     "metadata": {
@@ -59,8 +60,13 @@ class DataIngestion:
                         "supplier_name": supplier_name,
                         "contract_id": contract_id 
                     }
-                }])
-            
+                })
+
+            batch_size = 100
+            for i in range(0, len(vectors_to_upsert), batch_size):
+                dense_index.upsert(vectors=vectors_to_upsert[i: i + batch_size])
+            logging.info(f"Upserted {len(vectors_to_upsert)} vectors in {len(vectors_to_upsert)//batch_size} batches.")
+
             logging.info(f"Ingestion successful for {contract_id}")
 
         except Exception as e:
