@@ -120,7 +120,7 @@ sentrychain-ai/
 ├── src/
 │   ├── app.py                          # Uvicorn entrypoint
 │   └── SentryChain/
-│       ├── api/
+│       ├── backend/
 │       │   └── app.py                  # FastAPI routes
 │       ├── pipeline/
 │       │   ├── ingestion_pipeline.py   # Vector + graph ingestion
