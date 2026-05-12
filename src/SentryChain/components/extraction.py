@@ -72,6 +72,9 @@ class SlaMetadataExtraction:
                     sla = SLADocument()
 
                 output_path = self.ingestion_config.processed_pdf_dir / f"{pdf.stem}.json"
+                if output_path.exists():
+                    logging.info(f"Skipping {pdf.name} — already extracted.")
+                    continue
                 output_path.write_text(
                     sla.model_dump_json(indent=2, exclude_none=True), encoding="utf-8"
                 )
