@@ -15,7 +15,7 @@ st.markdown("""
     .main-title {
         font-size: 2.2rem;
         font-weight: 700;
-        color: #1f2937;
+        color: #ffffff;
     }
     .sub-title {
         color: #6b7280;
