@@ -16,6 +16,9 @@ class IngestionConfig:
         self.processed_pdf_dir = BASE_DIR / "data" / "processed_contracts"
         self.processed_json_contract = BASE_DIR / "data" / "processed_contracts"
         self.pdf_paths = list(self.contracts_dir.glob("*.pdf"))
+        
+        self.contracts_dir.mkdir(parents=True, exist_ok=True)
+        self.processed_pdf_dir.mkdir(parents=True, exist_ok=True)
 
 
 @dataclass

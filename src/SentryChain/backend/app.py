@@ -128,6 +128,7 @@ async def ingest_contract(file: UploadFile = File(...)):
     file_name = file_name.replace(" ", "_")
 
     save_path = ingestion_config.contracts_dir / file_name
+    save_path.parent.mkdir(parents=True, exist_ok=True)
     save_path.write_bytes(await file.read())
 
     contract_id = Path(file_name).stem
