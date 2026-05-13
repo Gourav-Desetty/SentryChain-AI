@@ -4,6 +4,9 @@ FROM python:3.12-slim
 # set working dir
 WORKDIR /app
 
+# Install CPU-only torch FIRST, before everything else
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
 # copy dependency file
 COPY requirements.txt .
 
