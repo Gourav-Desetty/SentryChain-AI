@@ -1,6 +1,4 @@
 import streamlit as st
-
-import streamlit as st
 import requests
 import json
 
@@ -52,7 +50,9 @@ st.markdown("""
 # ── sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.header("⚙️ Settings")
-    api_url = st.text_input("API Base URL", value="http://127.0.0.1:8000")
+    import os
+    default_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+    api_url = st.text_input("API Base URL", value=default_url)
     st.markdown("---")
     st.markdown("**SentryChain AI** monitors your vendor contracts and alerts you when an SLA violation occurs.")
     st.markdown("---")
