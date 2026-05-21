@@ -25,31 +25,35 @@ class DataIngestion:
         try:
             supplier_name = sla_data.supplier_info.service_provider_name if sla_data.supplier_info else contract_id  
 
-            graph.query(SUPPLIER_CONTRACT, params={
-                "s_name": supplier_name,
-                "c_id": contract_id
-            })
+            if graph is not None:
+                graph.query(SUPPLIER_CONTRACT, params={
+                    "s_name": supplier_name,
+                    "c_id": contract_id
+                })
 
-            if sla_data.penalty_clauses:
-                for idx, p in enumerate(sla_data.penalty_clauses):
-                    graph.query(PENALTY_NODES, params={
-                        "c_id": contract_id,
-                        "p_uid": f"rule_{contract_id}_{idx}",
-                        "type": p.penalty_type,
-                        "trigger": p.trigger_condition,
-                        "amount": p.penalty_amount,
-                        "ref": p.clause_id
-                    })
+                if sla_data.penalty_clauses:
+                    for idx, p in enumerate(sla_data.penalty_clauses):
+                        graph.query(PENALTY_NODES, params={
+                            "c_id": contract_id,
+                            "p_uid": f"rule_{contract_id}_{idx}",
+                            "type": p.penalty_type,
+                            "trigger": p.trigger_condition,
+                            "amount": p.penalty_amount,
+                            "ref": p.clause_id
+                        })
+            else:
+                logging.warning("Neo4j is unavailable, skipping graph injestion")
 
             vectors_to_upsert = []
             for i, (chunk, emb) in enumerate(zip(contract_chunks, embeddings)):
                 chunk_id = f"{contract_id}#chunk{i}"
 
-                graph.query(CONTRACT_CHUNK_LINK, params={
-                    "c_id": contract_id,
-                    "v_id": chunk_id,
-                    "text": chunk.page_content[:200]
-                })
+                if graph is not None:
+                    graph.query(CONTRACT_CHUNK_LINK, params={
+                        "c_id": contract_id,
+                        "v_id": chunk_id,
+                        "text": chunk.page_content[:200]
+                    })
 
                 vectors_to_upsert.append({
                     "id": chunk_id,
