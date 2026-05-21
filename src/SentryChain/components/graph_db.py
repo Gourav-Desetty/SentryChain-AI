@@ -23,6 +23,8 @@ class GraphStoreManager:
                 refresh_schema=False
             )
             logging.info("Neo4j connection established")
+            print("Neo4j connection established successfully!")  ## debugging
         except Exception as e:
             logging.warning(f"Neo4j unavailable at startup: {e}. Graph features disabled.")
+            print(f"Neo4j connection failed: {e}") ## debugging
             self.graph = None
