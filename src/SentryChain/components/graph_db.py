@@ -8,19 +8,21 @@ from langchain_neo4j import Neo4jGraph
 
 class GraphStoreManager:
     def __init__(self, neo4j_config: Neo4jConfig) -> None:
+        self.neo4j_config = neo4j_config
+        self.graph = None
+        self.connect()
+
+    def connect(self):
         try:
-            self.neo4j_config = neo4j_config
             logging.info("Initializing Neo4j graph connection")
             self.graph = Neo4jGraph(
-                url=neo4j_config.url, 
-                username=neo4j_config.username, 
-                password=neo4j_config.password,
-                database=neo4j_config.database,
+                url=self.neo4j_config.url, 
+                username=self.neo4j_config.username, 
+                password=self.neo4j_config.password,
+                database=self.neo4j_config.database,
                 refresh_schema=False
             )
             logging.info("Neo4j connection established")
         except Exception as e:
-            logging.error("")
-            raise CustomException(e, sys)
-
-
+            logging.warning(f"Neo4j unavailable at startup: {e}. Graph features disabled.")
+            self.graph = None

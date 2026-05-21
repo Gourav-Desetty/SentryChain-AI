@@ -30,14 +30,17 @@ class RagRetrieval:
 
             logging.info("Cross-referencing candidates with Neo4j Knowledge Graph...")
             # Graph search
-            graph_context = graph.query(GRAPH_SEARCH , params={
-                "supplier_name": supplier_name,  
-                "vector_ids": retrieved_vector_ids 
-            })
-
-            confirmed_ids = {item['id'] for item in graph_context}
-
-            verified_results = [m for m in vector_db_result['matches'] if m['id'] in confirmed_ids]
+            if graph is not None:
+                graph_context = graph.query(GRAPH_SEARCH, params={
+                    "supplier_name": supplier_name,
+                    "vector_ids": retrieved_vector_ids
+                })
+                confirmed_ids = {item['id'] for item in graph_context}
+                verified_results = [m for m in vector_db_result['matches'] if m['id'] in confirmed_ids]
+            else:
+                logging.warning("Neo4j unavailable, falling back to vector-only retrieval")
+                graph_context = []
+                verified_results = vector_db_result['matches']
 
             # return graph_context, vector_db_result, verified_results
             rag_retrieval_artifact = RagRetrievalArtifact(
