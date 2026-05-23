@@ -116,39 +116,69 @@ Full API surface for integration with existing procurement or contract managemen
 ## Project Structure
 
 ```
-sentrychain-ai/
-├── src/
-│   ├── app.py                          # Uvicorn entrypoint
-│   └── SentryChain/
-│       ├── backend/
-│       │   └── app.py                  # FastAPI routes
-│       ├── pipeline/
-│       │   ├── ingestion_pipeline.py   # Vector + graph ingestion
-│       │   ├── rag_retrieval.py        # Hybrid RAG
-│       │   └── news_monitor.py         # Tavily fetch + SLA compare
-│       ├── components/
-│       │   ├── ingestion.py            # LlamaParse PDF extraction
-│       │   ├── extraction.py           # LlamaCloud metadata extraction
-│       │   ├── transformation.py       # Text chunking
-│       │   ├── embedding.py            # BAAI/bge-m3 embeddings
-│       │   ├── vector_db.py            # Pinecone manager
-│       │   ├── graph_db.py             # Neo4j manager
-│       │   └── guardrails.py           # Input + output guardrails
-│       ├── entity/
-│       │   ├── schema.py               # Pydantic SLA schema
-│       │   ├── config_entity.py        # Configuration dataclasses
-│       │   └── artifact_entity.py      # Pipeline artifact dataclasses
-│       └── constants/
-│           ├── project_constants.py    # Paths, model names
-│           ├── prompts.py              # LLM prompt templates
-│           └── graph_queries.py        # Cypher queries
+SentryChain-AI/
+│
 ├── data/
-│   ├── contracts/                      # Place SLA PDFs here
-│   └── processed_contracts/            # Auto-generated parsed output
-├── Dockerfile
+│   ├── data.md
+│   ├── contracts/                       # Place SLA PDFs here
+│   └── processed_contracts/             # Auto-generated parsed output
+├── notebooks/
+│   ├── evals.html
+│   └── main.ipynb
+├── src/
+│   ├── __init__.py
+│   ├── app.py                           # Uvicorn entrypoint
+│   ├── main.py                          # CLI / pipeline runner
+│   └── SentryChain/
+│       ├── __init__.py
+│       ├── api/
+│       │   ├── __init__.py
+│       │   └── app.py                   # FastAPI routes
+│       ├── components/
+│       │   ├── __init__.py
+│       │   ├── embedding.py
+│       │   ├── extraction.py
+│       │   ├── graph_db.py
+│       │   ├── guardrails.py
+│       │   ├── ingestion.py
+│       │   ├── transformation.py
+│       │   └── vector_db.py
+│       ├── constants/
+│       │   ├── __init__.py
+│       │   ├── graph_queries.py
+│       │   ├── project_constants.py
+│       │   └── prompts.py
+│       ├── entity/
+│       │   ├── __init__.py
+│       │   ├── artifact_entity.py
+│       │   ├── config_entity.py
+│       │   └── schema.py
+│       ├── exception/
+│       │   ├── __init__.py
+│       │   └── exception.py
+│       ├── frontend/
+│       │   └── app.py                   # Streamlit UI
+│       ├── logging/
+│       │   ├── __init__.py
+│       │   └── logger.py
+│       ├── pipeline/
+│       │   ├── __init__.py
+│       │   ├── ingestion_pipeline.py
+│       │   ├── news_monitor.py
+│       │   └── rag_retrieval.py
+│       └── utils/
+│           ├── __init__.py
+│           └── helper_pipeline.py
+├── .gitignore
+├── .python-version
 ├── docker-compose.yml
+├── Dockerfile
+├── LICENSE
+├── pyproject.toml
+├── README.md
+├── requirements-dev.txt
 ├── requirements.txt
-└── pyproject.toml
+└── uv.lock
 ```
 
 ---
