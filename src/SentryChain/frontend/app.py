@@ -211,11 +211,27 @@ with tab3:
                         unsafe_allow_html=True,
                     )
             except requests.exceptions.HTTPError as e:
-                try:
-                    error_detail = e.response.json().get("detail", e.response.text)
-                except ValueError:
-                    error_detail = e.response.text
-                st.error(f"Query failed: {error_detail}")
+                if e.response is not None and e.response.status_code == 404:
+                    result, err = api_post(
+                        "/query",
+                        payload={"question": question, "contract_id": contract_id_q},
+                    )
+                    if err:
+                        st.error(f"Query failed: {err}")
+                    else:
+                        answer_box.markdown(
+                            f'<div class="verdict-box">{result.get("answer", "No answer returned.")}</div>',
+                            unsafe_allow_html=True,
+                        )
+                    st.info(
+                        "Streaming endpoint was not found on this backend, so the app used the normal query endpoint."
+                    )
+                else:
+                    try:
+                        error_detail = e.response.json().get("detail", e.response.text)
+                    except ValueError:
+                        error_detail = e.response.text
+                    st.error(f"Query failed: {error_detail}")
             except Exception as e:
                 st.error(f"Query failed: {e}")
 
