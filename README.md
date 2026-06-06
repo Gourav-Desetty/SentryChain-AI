@@ -1,3 +1,13 @@
+---
+title: SentryChain AI
+emoji: 🔗
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # SentryChain AI
 
 > **Autonomous SLA Violation Detection** - Reads your contracts, watches the news, and tells you when you're owed money.
