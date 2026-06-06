@@ -1,6 +1,6 @@
-# SentryChain AI 🔗⚖️
+# SentryChain AI
 
-> **Autonomous SLA Violation Detection** — Reads your contracts, watches the news, and tells you when you're owed money.
+> **Autonomous SLA Violation Detection** - Reads your contracts, watches the news, and tells you when you're owed money.
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-REST_API-009688?logo=fastapi)](https://fastapi.tiangolo.com)
@@ -15,14 +15,15 @@
 
 ## The Problem
 
-When a company pays for a cloud service like email or storage, the contract — called an **SLA (Service Level Agreement)** — guarantees things like *"99.9% uptime, or we owe you a refund."*
+When a company pays for a cloud service like email or storage, the contract - called an **SLA (Service Level Agreement)** - guarantees things like *"99.9% uptime, or we owe you a refund."*
 
 The problem? These contracts are **hundreds of pages of dense legal text**. When Microsoft Azure goes down for 4 hours, nobody has time to:
+
 1. Find the right clause in the contract
 2. Calculate what refund they're owed
 3. File the claim before the window expires
 
-Companies routinely lose **thousands of dollars** in entitled service credits — simply because no one was watching.
+Companies routinely lose **thousands of dollars** in entitled service credits - simply because no one was watching.
 
 ---
 
@@ -30,55 +31,54 @@ Companies routinely lose **thousands of dollars** in entitled service credits �
 
 SentryChain AI is an end-to-end agentic pipeline that:
 
-1. **Reads and understands** your SLA contracts (no matter how complex)
-2. **Monitors the internet** 24/7 for relevant outage or breach news
-3. **Automatically generates verdicts** — citing exact clauses, penalties, and evidence
+1. **Reads and understands** your SLA contracts, no matter how complex
+2. **Monitors live web news** for relevant outage or breach events
+3. **Generates grounded verdicts** with matching SLA clauses, penalties, and evidence
 
 ---
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        PHASE 1: INGESTION                       │
-│                                                                 │
-│  SLA PDFs ──► LlamaParse ──► Text + Metadata ──► Chunking       │
-│                                    │                            │
-│                          ┌─────────┴──────────┐                 │
-│                          ▼                    ▼                 │
-│                    Pinecone (Vector DB)   Neo4j (Graph DB)      │
-│                    "The Library"          "The Map"             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────┐
-│                     PHASE 2: MONITORING                         │
-│                                                                 │
-│  Tavily News Search ──► Input Guardrail ──► Relevant Articles   │
-│                                                  │              │
-│                                    Hybrid RAG Retrieval         │
-│                               (Vector Search + Graph Lookup)    │
-│                                          │                      │
-│                                   Groq LLM Analysis             │
-│                                          │                      │
-│                              Output Guardrail (Hallucination    │
-│                              Check) ──► Final Verdict           │
-└─────────────────────────────────────────────────────────────────┘
+```text
+PHASE 1: INGESTION
+
+SLA PDFs
+  -> LlamaParse text extraction
+  -> LlamaCloud metadata extraction
+  -> Chunking and embeddings
+  -> Pinecone vector index
+  -> Neo4j knowledge graph
+
+PHASE 2: MONITORING
+
+Tavily news search
+  -> Input guardrail
+  -> Relevant outage/breach articles
+  -> Hybrid RAG retrieval
+     - Pinecone semantic search
+     - Neo4j graph lookup
+  -> Groq LLM analysis
+  -> Output guardrail
+  -> Final SLA risk verdict
 ```
 
 ---
 
 ## Key Features
 
-### 🧠 Hybrid RAG Retrieval
-Combines **semantic vector search** (Pinecone) with **structured graph traversal** (Neo4j) for high-precision clause retrieval. Only chunks that appear in *both* the vector index and the knowledge graph are passed to the LLM — reducing noise and hallucination risk.
+### Hybrid RAG Retrieval
 
-### 🛡️ Two-Layer Guardrail System
+Combines **semantic vector search** with **structured graph traversal** for high-precision clause retrieval. Contract chunks are stored in Pinecone and cross-referenced through Neo4j before being passed to the LLM, reducing noise and hallucination risk.
+
+### Two-Layer Guardrail System
+
 | Layer | Type | What it does |
 |-------|------|--------------|
-| Input Guardrail | Deterministic (keyword filter) | Drops irrelevant news before it reaches the LLM |
-| Output Guardrail | LLM-based | Validates every number, percentage, and clause reference in the verdict against the actual SLA text |
+| Input Guardrail | Deterministic keyword filter | Drops irrelevant news before it reaches the LLM |
+| Output Guardrail | LLM-based validation | Validates numbers, percentages, and clause references in the verdict against the SLA text |
 
-### 📊 RAGAS Evaluation
+### RAGAS Evaluation
+
 The retrieval and generation pipeline was benchmarked on a **12-question synthetic test set** built from real SLA clauses:
 
 | Metric | Score |
@@ -86,28 +86,31 @@ The retrieval and generation pipeline was benchmarked on a **12-question synthet
 | Faithfulness | ~0.98 |
 | Answer Relevancy | ~0.97 |
 
-### 🔌 REST API (FastAPI)
+### REST API
+
 Full API surface for integration with existing procurement or contract management systems:
-- `POST /ingest` — Upload a new SLA PDF
-- `GET /contracts` — List all monitored contracts
-- `POST /query` — Ask a natural language question about a contract
-- `POST /monitor` — Run live news check and generate a violation verdict
+
+- `POST /ingest` - Upload a new SLA PDF
+- `GET /contracts` - List all monitored contracts
+- `POST /query` - Ask a natural language question about a contract
+- `POST /monitor` - Run live news check and generate a violation verdict
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| PDF Ingestion | LlamaParse (agentic tier) |
+|-------|------------|
+| PDF Ingestion | LlamaParse |
 | Metadata Extraction | LlamaCloud structured extraction |
-| Embeddings | `BAAI/bge-m3` (1024-dim, sentence-transformers) |
-| Vector Store | Pinecone (serverless, cosine similarity) |
+| Embeddings | `BAAI/bge-m3` with sentence-transformers |
+| Vector Store | Pinecone |
 | Knowledge Graph | Neo4j |
 | News Retrieval | Tavily Search API |
-| LLM | Groq — LLaMA 3.3 70B Versatile |
+| LLM | Groq - LLaMA 3.3 70B Versatile |
 | Evaluation | RAGAS |
 | API Framework | FastAPI + Uvicorn |
+| Frontend | Streamlit |
 | Containerization | Docker + Docker Compose |
 | Language | Python 3.12 |
 
@@ -115,71 +118,51 @@ Full API surface for integration with existing procurement or contract managemen
 
 ## Project Structure
 
-```
+```text
 SentryChain-AI/
-│
-├── data/
-│   ├── data.md
-│   ├── contracts/                       # Place SLA PDFs here
-│   └── processed_contracts/             # Auto-generated parsed output
-├── notebooks/
-│   ├── evals.html
-│   └── main.ipynb
-├── src/
-│   ├── __init__.py
-│   ├── app.py                           # Uvicorn entrypoint
-│   ├── main.py                          # CLI / pipeline runner
-│   └── SentryChain/
-│       ├── __init__.py
-│       ├── api/
-│       │   ├── __init__.py
-│       │   └── app.py                   # FastAPI routes
-│       ├── components/
-│       │   ├── __init__.py
-│       │   ├── embedding.py
-│       │   ├── extraction.py
-│       │   ├── graph_db.py
-│       │   ├── guardrails.py
-│       │   ├── ingestion.py
-│       │   ├── transformation.py
-│       │   └── vector_db.py
-│       ├── constants/
-│       │   ├── __init__.py
-│       │   ├── graph_queries.py
-│       │   ├── project_constants.py
-│       │   └── prompts.py
-│       ├── entity/
-│       │   ├── __init__.py
-│       │   ├── artifact_entity.py
-│       │   ├── config_entity.py
-│       │   └── schema.py
-│       ├── exception/
-│       │   ├── __init__.py
-│       │   └── exception.py
-│       ├── frontend/
-│       │   └── app.py                   # Streamlit UI
-│       ├── logging/
-│       │   ├── __init__.py
-│       │   └── logger.py
-│       ├── pipeline/
-│       │   ├── __init__.py
-│       │   ├── ingestion_pipeline.py
-│       │   ├── news_monitor.py
-│       │   └── rag_retrieval.py
-│       └── utils/
-│           ├── __init__.py
-│           └── helper_pipeline.py
-├── .gitignore
-├── .python-version
-├── docker-compose.yml
-├── Dockerfile
-├── LICENSE
-├── pyproject.toml
-├── README.md
-├── requirements-dev.txt
-├── requirements.txt
-└── uv.lock
+|-- data/
+|   |-- data.md
+|   |-- contracts/                 # Place SLA PDFs here
+|   `-- processed_contracts/       # Auto-generated parsed output
+|-- notebooks/
+|   `-- main.ipynb
+|-- src/
+|   |-- app.py                     # Uvicorn entrypoint
+|   |-- main.py                    # CLI / full pipeline runner
+|   `-- SentryChain/
+|       |-- backend/
+|       |   `-- app.py             # Source-of-truth FastAPI app
+|       |-- api/
+|       |   `-- app.py             # Compatibility import for old API path
+|       |-- components/
+|       |-- constants/
+|       |-- entity/
+|       |-- exception/
+|       |-- frontend/
+|       |   `-- app.py             # Streamlit UI
+|       |-- logging/
+|       |-- pipeline/
+|       `-- utils/
+|-- docker-compose.yml
+|-- Dockerfile
+|-- LICENSE
+|-- pyproject.toml
+|-- README.md
+|-- requirements.txt
+`-- uv.lock
 ```
+
+---
+
+## Entrypoints
+
+The canonical FastAPI app lives at:
+
+```text
+src.SentryChain.backend.app:app
+```
+
+Use this path for Docker, Uvicorn, and deployments. The older `src.SentryChain.api.app` module is kept only as a compatibility import so existing commands do not break.
 
 ---
 
@@ -188,14 +171,14 @@ SentryChain-AI/
 ### Prerequisites
 
 - Python 3.12
-- Docker & Docker Compose
-- API keys for: Groq, Pinecone, Neo4j (AuraDB or self-hosted), Tavily, LlamaCloud
+- Docker and Docker Compose
+- API keys for Groq, Pinecone, Neo4j, Tavily, and LlamaCloud
 
 ### 1. Clone and install
 
 ```bash
 git clone https://github.com/Gourav-Desetty/SentryChain-AI.git
-cd sentrychain-ai
+cd SentryChain-AI
 pip install -r requirements.txt
 ```
 
@@ -223,17 +206,20 @@ Place SLA PDF files in `data/contracts/`.
 docker-compose up --build
 ```
 
-The API will be available at `http://localhost:8000`.  
-Neo4j browser at `http://localhost:7474`.
+The API will be available at `http://localhost:8000`.
+Neo4j browser will be available at `http://localhost:7474`.
 
-### 5. Run manually (without Docker)
+### 5. Run manually
 
 ```bash
 # Ingest contracts and run the full pipeline
 python -m src.main
 
-# Or start just the API server
+# Start just the API server
 python src/app.py
+
+# Start the Streamlit UI
+streamlit run src/SentryChain/frontend/app.py
 ```
 
 ---
@@ -241,12 +227,14 @@ python src/app.py
 ## API Usage
 
 ### Upload and ingest a new contract
+
 ```bash
 curl -X POST http://localhost:8000/ingest \
   -F "file=@your_contract.pdf"
 ```
 
 ### Ask a question about a contract
+
 ```bash
 curl -X POST http://localhost:8000/query \
   -H "Content-Type: application/json" \
@@ -254,6 +242,7 @@ curl -X POST http://localhost:8000/query \
 ```
 
 ### Run live SLA violation check
+
 ```bash
 curl -X POST http://localhost:8000/monitor \
   -H "Content-Type: application/json" \
@@ -261,13 +250,14 @@ curl -X POST http://localhost:8000/monitor \
 ```
 
 **Example verdict output:**
+
 ```json
 {
   "supplier_name": "Microsoft",
-  "verdict": "SLA VIOLATION LIKELY — HIGH SEVERITY\n\nAzure reported a 4-hour outage on Jan 15 2026. Per Section 6.1, uptime below 99.9% triggers a 25% service credit...",
+  "verdict": "SLA VIOLATION LIKELY - HIGH SEVERITY\n\nAzure reported a 4-hour outage. Per Section 6.1, uptime below 99.9% triggers a 25% service credit...",
   "is_verified": true,
   "hallucinations": [],
-  "news_used": ["Microsoft Azure Global Outage — Jan 15 2026"]
+  "news_used": ["Microsoft Azure Global Outage"]
 }
 ```
 
@@ -277,21 +267,27 @@ curl -X POST http://localhost:8000/monitor \
 
 | Contract | Notes |
 |----------|-------|
-| Microsoft Online Services SLA (Jan 2026) | Publicly available via Microsoft Licensing Docs |
-| Mazagon Dock Shipbuilders SLA | Internal procurement document — not included in repo |
+| Microsoft Online Services SLA | Publicly available via Microsoft Licensing Docs |
+| Mazagon Dock Shipbuilders SLA | Internal procurement document - not included in repo |
+
+---
+
+## Deployment Note
+
+The hosted demo may sleep because the backend, Streamlit app, and Neo4j instance use free-tier infrastructure. The project is designed to run locally with Docker for reproducible review.
 
 ---
 
 ## Roadmap
 
-- [x] PDF ingestion pipeline (LlamaParse)
-- [x] Structured metadata extraction (LlamaCloud)
-- [x] Hybrid RAG retrieval (Pinecone + Neo4j)
-- [x] Live news monitoring (Tavily)
-- [x] Input + output guardrails
-- [x] RAGAS evaluation (Faithfulness ~0.98, Relevancy ~0.97)
+- [x] PDF ingestion pipeline with LlamaParse
+- [x] Structured metadata extraction with LlamaCloud
+- [x] Hybrid RAG retrieval with Pinecone and Neo4j
+- [x] Live news monitoring with Tavily
+- [x] Input and output guardrails
+- [x] RAGAS evaluation
 - [x] FastAPI REST layer
-- [x] Docker + Docker Compose
+- [x] Docker and Docker Compose
 - [x] Streamlit UI
 - [ ] Evidently drift monitoring
 - [ ] MLflow experiment tracking

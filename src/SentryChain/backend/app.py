@@ -81,7 +81,7 @@ app = FastAPI(lifespan=lifespan)
 
 def get_supplier_name(contract_id: str):
     """Read supplier name from the processed json contracts"""
-    json_file = ingestion_config.processed_pdf_dir / f"{contract_id.replace("_parsed", "")}.json"
+    json_file = ingestion_config.processed_pdf_dir / f"{contract_id.replace('_parsed', '')}.json"
     if not json_file.exists():
         raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
     data = json.loads(json_file.read_text(encoding='utf-8'))
