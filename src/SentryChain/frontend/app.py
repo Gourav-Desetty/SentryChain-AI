@@ -177,7 +177,7 @@ with tab3:
     st.subheader("Ask a Question About a Contract")
     st.caption("Type a natural language question and pick the contract you want to query.")
 
-    contract_id_q = st.text_input("Contract ID", placeholder="e.g. microsoft_sla_parsed")
+    contract_id_q = st.text_input("Contract ID", placeholder="e.g. microsoft_sla")
     question = st.text_area(
         "Your Question",
         placeholder="What is the uptime guarantee? What happens if they breach it?",
