@@ -241,7 +241,7 @@ with tab4:
     st.caption("Enter a contract ID to scan the latest news for potential SLA breaches.")
 
     contract_id_m = st.text_input(
-        "Contract ID to Monitor", placeholder="e.g. microsoft_sla_parsed"
+        "Contract ID to Monitor", placeholder="e.g. microsoft_sla"
     )
 
     if st.button("Run Monitor"):

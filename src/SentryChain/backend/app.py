@@ -130,7 +130,7 @@ def list_contracts():
     """list all the contracts"""
     contracts = []
     for txt_file in ingestion_config.processed_pdf_dir.glob("*_parsed.txt"):
-        contract_id = txt_file.stem
+        contract_id = txt_file.stem.replace("_parsed", "")
         supplier_name = get_supplier_name(contract_id)
         contracts.append({"Contract_id": contract_id, "supplier_name": supplier_name})
     return {"Contracts": contracts}
