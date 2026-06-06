@@ -82,7 +82,8 @@ app = FastAPI(lifespan=lifespan)
 
 def get_supplier_name(contract_id: str):
     """Read supplier name from the processed json contracts"""
-    json_file = ingestion_config.processed_pdf_dir / f"{contract_id.replace('_parsed', '')}.json"
+    base_id = contract_id.replace("_parsed", "")
+    json_file = ingestion_config.processed_pdf_dir / f"{base_id}.json"
     if not json_file.exists():
         raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
     data = json.loads(json_file.read_text(encoding='utf-8'))
@@ -91,12 +92,13 @@ def get_supplier_name(contract_id: str):
 
 def build_query_prompt(request: QueryRequest):
     supplier_name = get_supplier_name(request.contract_id)
-    clean_id = request.contract_id.replace("_parsed", "")
+
+    contract_id = request.contract_id
 
     artifact = rag_retrieval.rag_retrieval(
         query=request.question,
         supplier_name=supplier_name,
-        contract_id=clean_id,
+        contract_id=contract_id,
         index=services["dense_index"],
         graph=services["graph"]
     )
