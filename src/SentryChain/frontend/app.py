@@ -97,6 +97,20 @@ def api_post(path, payload=None, files=None):
         return None, str(e)
 
 
+def api_post_stream(path, payload):
+    response = requests.post(
+        f"{BASE_URL}{path}",
+        json=payload,
+        stream=True,
+        timeout=1200,
+    )
+    response.raise_for_status()
+
+    for chunk in response.iter_content(chunk_size=64, decode_unicode=True):
+        if chunk:
+            yield chunk
+
+
 st.markdown('<div class="main-title">SentryChain AI</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="sub-title">Automated SLA Violation Detection - Powered by RAG + Knowledge Graphs</div>',
@@ -174,22 +188,36 @@ with tab3:
         if not contract_id_q or not question:
             st.warning("Please fill in both the contract ID and the question.")
         else:
-            with st.spinner("Searching contract..."):
-                result, err = api_post(
-                    "/query",
-                    payload={"question": question, "contract_id": contract_id_q},
-                )
-            if err:
-                st.error(f"Query failed: {err}")
-            else:
-                st.markdown("**Answer:**")
-                st.markdown(
-                    f'<div class="verdict-box">{result.get("answer", "No answer returned.")}</div>',
-                    unsafe_allow_html=True,
-                )
-                st.caption(
-                    f"Supplier: {result.get('supplier_name')} | Sources: {result.get('sources', [])}"
-                )
+            st.markdown("**Answer:**")
+            answer_box = st.empty()
+            full_answer = ""
+
+            try:
+                with st.spinner("Searching contract..."):
+                    stream = api_post_stream(
+                        "/query/stream",
+                        {"question": question, "contract_id": contract_id_q},
+                    )
+                    for token in stream:
+                        full_answer += token
+                        answer_box.markdown(
+                            f'<div class="verdict-box">{full_answer}</div>',
+                            unsafe_allow_html=True,
+                        )
+
+                if not full_answer:
+                    answer_box.markdown(
+                        '<div class="verdict-box">No answer returned.</div>',
+                        unsafe_allow_html=True,
+                    )
+            except requests.exceptions.HTTPError as e:
+                try:
+                    error_detail = e.response.json().get("detail", e.response.text)
+                except ValueError:
+                    error_detail = e.response.text
+                st.error(f"Query failed: {error_detail}")
+            except Exception as e:
+                st.error(f"Query failed: {e}")
 
 
 with tab4:

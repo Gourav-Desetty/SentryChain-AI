@@ -1,6 +1,7 @@
 import os, sys, json, asyncio
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import StreamingResponse
 from contextlib import asynccontextmanager
 from src.SentryChain.components.transformation import DataTransformation
 from src.SentryChain.components.embedding import EmbeddingManager
@@ -86,6 +87,32 @@ def get_supplier_name(contract_id: str):
         raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
     data = json.loads(json_file.read_text(encoding='utf-8'))
     return data.get("supplier_info", {}).get("service_provider_name", "Unknown")
+
+
+def build_query_prompt(request: QueryRequest):
+    supplier_name = get_supplier_name(request.contract_id)
+    clean_id = request.contract_id.replace("_parsed", "")
+
+    artifact = rag_retrieval.rag_retrieval(
+        query=request.question,
+        supplier_name=supplier_name,
+        contract_id=clean_id,
+        index=services["dense_index"],
+        graph=services["graph"]
+    )
+
+    vector_texts = [m['metadata']['text'] for m in artifact.verified_results]
+    graph_texts = [item['preview'] for item in artifact.graph_context]
+    combined_results = list(set(vector_texts + graph_texts))
+
+    prompt = f"""You are a contract analyst. Answer using ONLY the context below.
+            Context:
+            {chr(10).join(combined_results)}
+
+            Question: {request.question}
+            Answer (cite clause numbers where possible):"""
+
+    return supplier_name, artifact, prompt
 
 
 #-----------------------------Routes------------------------------------------#
@@ -176,29 +203,7 @@ async def ingest_contract(file: UploadFile = File(...)):
 @app.post("/query")
 def rag_query(request: QueryRequest):
     """Ask question about contract"""
-    supplier_name = get_supplier_name(request.contract_id)
-
-    clean_id = request.contract_id.replace("_parsed", "")
-
-    artifact = rag_retrieval.rag_retrieval(
-        query=request.question,
-        supplier_name=supplier_name,
-        contract_id=clean_id,
-        index=services["dense_index"],
-        graph=services["graph"]
-    )
-
-    vector_texts = [m['metadata']['text'] for m in artifact.verified_results]
-    graph_texts = [item['preview'] for item in artifact.graph_context]
-    combined_results = list(set(vector_texts + graph_texts))
-
-    prompt = f"""You are a contract analyst. Answer using ONLY the context below.
-            Context:
-            {chr(10).join(combined_results)}
-
-            Question: {request.question}
-            Answer (cite clause numbers where possible):"""
-
+    supplier_name, artifact, prompt = build_query_prompt(request)
     response = services["llm"].invoke(prompt)
 
     # debugging
@@ -212,6 +217,20 @@ def rag_query(request: QueryRequest):
         "answer": response.content,
         "sources": [m["id"] for m in artifact.verified_results[:3]]
     }
+
+
+@app.post("/query/stream")
+def rag_query_stream(request: QueryRequest):
+    """Stream answer tokens for a contract question."""
+    _, _, prompt = build_query_prompt(request)
+
+    def stream_answer():
+        for chunk in services["llm"].stream(prompt):
+            content = getattr(chunk, "content", None)
+            if content:
+                yield content
+
+    return StreamingResponse(stream_answer(), media_type="text/plain")
 
 
 @app.post('/monitor')
