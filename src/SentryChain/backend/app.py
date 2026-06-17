@@ -183,23 +183,27 @@ async def ingest_contract(file: UploadFile = File(...)):
             ingestion_config=ingestion_config,
             contract_id=contract_id
         ) 
-        chunks = data_transformation.split_docs(documents=docs)
-        embeddings = embedding_manager.generate_embeddings([c.page_content for c in chunks])
+        loop = asyncio.get_running_loop()
 
-        data_ingestion.data_ingestion(
-            sla_data=sla,
-            contract_id=contract_id,
-            contract_chunks=chunks,
-            embeddings=embeddings,
-            dense_index=services["dense_index"],
-            graph=services["graph"]
-        )
+        def blocking_ingest_work():
+            chunks = data_transformation.split_docs(documents=docs)
+            embeddings = embedding_manager.generate_embeddings([c.page_content for c in chunks])
+            data_ingestion.data_ingestion(
+                sla_data=sla,
+                contract_id=contract_id,
+                contract_chunks=chunks,
+                embeddings=embeddings,
+                dense_index=services["dense_index"],
+                graph=services["graph"]
+            )
+
+        await loop.run_in_executor(None, blocking_ingest_work)
 
         return {
-            "message": f"Contract {contract_id} successfully ingeseted."
+            "message": f"Contract {contract_id} successfully ingested."
         }
     except Exception as e:
-        logging.error(f"Ingestion failes: {e}")
+        logging.error(f"Ingestion failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/query")
