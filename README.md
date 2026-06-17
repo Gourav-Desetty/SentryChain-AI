@@ -289,8 +289,6 @@ The hosted demo may sleep because the backend, Streamlit app, and Neo4j instance
 - [x] FastAPI REST layer
 - [x] Docker and Docker Compose
 - [x] Streamlit UI
-- [ ] Evidently drift monitoring
-- [ ] MLflow experiment tracking
 
 ---
 
