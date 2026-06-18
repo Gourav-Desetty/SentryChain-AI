@@ -83,8 +83,8 @@ The retrieval and generation pipeline was benchmarked on a **12-question synthet
 
 | Metric | Score |
 |--------|-------|
-| Faithfulness | ~0.98 |
-| Answer Relevancy | ~0.97 |
+| Faithfulness | ~0.97 |
+| Answer Relevancy | ~0.74 |
 
 ### REST API
 
